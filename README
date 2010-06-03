@@ -1,3 +1,14 @@
+AUTHOR: Gordon Sommers, gordon.sommers@gmail.com
+
+DESCRIPTION
+ A preprocessor that lets you use ruby to inline code-generation in
+ other source files. Output can be saved (e.g. to hide the intermediary
+ layer from someone who doesn't care for ruby), or can be piped directly
+ to a compiler/interpreter. I'd like to add something to let people use
+ this in shebangs eventually. Enjoy playing with it!
+
+
+HISTORY
 06/03/2010
  the project is born!
  get in contact with me at gordon.sommers@gmail.com
