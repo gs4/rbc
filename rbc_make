@@ -1,0 +1,57 @@
+#!/usr/bin/env ruby
+##################
+#
+#  rbc_make: recurses the local directory structure
+#    and uses rbc_pp.rb to generate #{file} from
+#    each #{file}.rbc. For instance, foo.cc.rbc -> foo.cc
+#
+#  this program makes destructive writes the filesystem, so
+#    use with caution!
+#
+#  author: gordon.sommers@gmail.com
+#
+####
+
+######
+#
+# TODOs: support more command line args
+#
+# maybe-todos: make a nondestructive version of this?
+#              make rbc_pp export a class that we can call directly?
+#
+
+def usage
+  puts "usage: #{$0} [-h]"
+  puts "  -h signals the inclusion of hidden directories (unix only)"
+  puts "  -p means pretend; don't actually write any files"
+  exit 0
+end
+
+incl_hidden = false
+pretend = false
+ARGV.each do |arg|
+  case arg
+    when "-h" then incl_hidden = true
+    when "-p" then pretend = true
+    else usage
+  end
+end
+
+require 'find'
+Find.find("./") do |f|
+  if (f != "./") &&
+      (not incl_hidden) &&
+      (FileTest.directory?(f)) &&
+      (File.basename(f)[0] == ?.)
+    Find.prune
+  end
+  
+  if f =~ /.rbc$/ && (incl_hidden || File.basename(f)[0] != ?.)
+    newf = f[0..-5]
+    puts "* about to process #{f}"
+    `./rbc_pp.rb #{f} > #{newf}` if not pretend
+    puts "  >> generation #{f} -> #{newf} complete."
+  end
+end
+
+
