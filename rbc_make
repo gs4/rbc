@@ -20,6 +20,9 @@
 #              make rbc_pp export a class that we can call directly?
 #
 
+require 'find'
+
+
 def usage
   puts "usage: #{$0} [-h]"
   puts "  -h signals the inclusion of hidden directories (unix only)"
@@ -37,7 +40,8 @@ ARGV.each do |arg|
   end
 end
 
-require 'find'
+
+
 Find.find("./") do |f|
   if (f != "./") &&
       (not incl_hidden) &&
