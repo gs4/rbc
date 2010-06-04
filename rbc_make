@@ -50,7 +50,7 @@ Find.find("./") do |f|
     Find.prune
   end
   
-  if f =~ /.rbc$/ && (incl_hidden || File.basename(f)[0] != ?.)
+  if f =~ /\.rbc$/ && FileTest.file?(f) && (incl_hidden || File.basename(f)[0] != ?.)
     newf = f[0..-5]
     puts "* about to process #{f}"
     `./rbc_pp.rb #{f} > #{newf}` if not pretend

@@ -1,0 +1,10 @@
+I think I fixed this 06/04/2010
+
+See below:
+  * about to process ./rbc
+    >> generation ./rbc -> . complete.
+  * about to process ./rbc/examples/test.cc.rbc
+    >> generation ./rbc/examples/test.cc.rbc -> ./rbc/examples/test.cc complete.
+
+Basically, it needs to only operate on actual files, and only things that end in \.rbc, not just .rbc (regex .)
+
