@@ -6,7 +6,7 @@
 #    each #{file}.rbc. For instance, foo.cc.rbc -> foo.cc
 #
 #  this program makes destructive writes the filesystem, so
-#    use with caution!
+#    use with caution (use -p if you're unsure)!
 #
 #  author: gordon.sommers@gmail.com
 #
@@ -14,29 +14,28 @@
 
 ######
 #
-# TODOs: support more command line args
-#
-# maybe-todos: make a nondestructive version of this?
-#              make rbc_pp export a class that we can call directly?
+# TODOs:  :)
 #
 
 require 'find'
 require 'rbc_pp'
 
 def usage
-  puts "usage: #{$0} [-h]"
+  puts "usage: #{$0} [args]"
+  puts "  -c compile; pass the files directly to g++"
   puts "  -h include hidden directories (unix only)"
   puts "  -p pretend; don't actually write any files"
-  puts "  -c compile; pass the files directly to g++"
+  puts "  -r recursive"
   exit 0
 end
 
-incl_hidden,pretend,compile = false,false,false
+incl_hidden,pretend,compile,recursive = false,false,false,false
 ARGV.each do |arg|
   case arg
     when "-h" then incl_hidden = true
     when "-p" then pretend = true
-	when "-c" then compile = true
+    when "-c" then compile = true
+    when "-r" then recursive = true
     else usage
   end
 end
@@ -44,7 +43,7 @@ end
 Find.find("./") do |f|
   ftype = File.ftype f
   fst_chr = File.basename(f)[0]
-  Find.prune if f != "./" && (not incl_hidden) && ftype == "directory" && fst_chr == ?.
+  Find.prune if (f != "./" && ftype == "directory") && (((not incl_hidden) && fst_chr == ?.) || (not recursive))
   
   if f =~ /\.rbc$/ && ftype == "file" && fst_chr != ?.
     newf = f[0..-5]
