@@ -21,41 +21,44 @@
 #
 
 require 'find'
-
+require 'rbc_pp'
 
 def usage
   puts "usage: #{$0} [-h]"
-  puts "  -h signals the inclusion of hidden directories (unix only)"
-  puts "  -p means pretend; don't actually write any files"
+  puts "  -h include hidden directories (unix only)"
+  puts "  -p pretend; don't actually write any files"
+  puts "  -c compile; pass the files directly to g++"
   exit 0
 end
 
-incl_hidden = false
-pretend = false
+incl_hidden,pretend,compile = false,false,false
 ARGV.each do |arg|
   case arg
     when "-h" then incl_hidden = true
     when "-p" then pretend = true
+	when "-c" then compile = true
     else usage
   end
 end
 
-
-
 Find.find("./") do |f|
-  if (f != "./") &&
-      (not incl_hidden) &&
-      (FileTest.directory?(f)) &&
-      (File.basename(f)[0] == ?.)
-    Find.prune
-  end
+  ftype = File.ftype f
+  fst_chr = File.basename(f)[0]
+  Find.prune if f != "./" && (not incl_hidden) && ftype == "directory" && fst_chr == ?.
   
-  if f =~ /\.rbc$/ && FileTest.file?(f) && (incl_hidden || File.basename(f)[0] != ?.)
+  if f =~ /\.rbc$/ && ftype == "file" && fst_chr != ?.
     newf = f[0..-5]
     puts "* about to process #{f}"
-    `./rbc_pp.rb #{f} > #{newf}` if not pretend
+	next if pretend
+	File.open(newf,'w') do |out_fh|
+      parse_file(File.open(f),out_fh)
+    end
     puts "  >> generation #{f} -> #{newf} complete."
+	if compile
+	  cname = File.join(File.dirname(newf),File.basename(newf,File.extname(newf)))
+	  puts "  >> g++ -o #{cname} #{newf}"
+	  puts `g++ -o #{cname} #{newf}`
+	end
   end
 end
-
 
