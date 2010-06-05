@@ -1,0 +1,23 @@
+#include <iostream>
+
+using namespace std;
+
+$START$
+%w(int float size_t).map{|type|
+	"#{type} square(#{type} x){ return x*x; }"
+}.join "\n"
+$STOP$
+
+int main(int argc, char * argv[]) {
+	int i = 23;
+	float f = 3.21;
+	size_t s = 7;
+	$START$
+	['i','f','s'].map{|x|
+		"cout << #{x} << \"^2 = \" << square(#{x}) << endl;"
+	}.join "\n"
+	$STOP$
+    return 0;
+}
+
+
